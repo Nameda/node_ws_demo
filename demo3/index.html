@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>websocket</title>
+</head>
+<body>
+    <h1>Chat Room</h1>
+    <input type="text" id="sendTxt">
+    <button id="btn">发送</button>
+    <script>
+        var websocket = new WebSocket("ws://localhost:3000");
+        var showMessage = function (data,type){
+            var div = document.createElement('div');
+            div.innerHTML = data;
+            if(type=="enter"){
+                div.style.color = "blue";
+            }else if(type == "leave"){
+                div.style.color = "red";
+            }
+            document.body.appendChild(div);
+        }
+        websocket.onopen = function(){
+            console.log('websocket open');
+            document.getElementById('btn').onclick = function(){
+                var txt = document.getElementById("sendTxt").value;
+                if(txt){
+                    websocket.send(txt);
+                }
+            }
+        };
+        websocket.onclose = function(){
+            console.log("websocket close");
+            document.getElementById('msg').innerHTML = "Close";
+        };
+        websocket.onmessage = function(e){
+            var msg = JSON.parse(e.data)
+            showMessage(msg.data,msg.type);
+        };
+        
+    </script>
+</body>
+</html>
